@@ -1,5 +1,8 @@
 import java.util.*;
+import java.io.*;
 import java.time.*;
+import java.nio.file.*;
+import java.nio.file.attribute.*;
 
 public class Grader{
   public static void main(String[] args){
@@ -10,7 +13,49 @@ public class Grader{
     Dictionary folders = set_assignment_folders();
     Dictionary dates = set_due_dates();
     String assign = intro(s, files);
+    System.out.print("--Gathering files--");
+    Dictionary days = gather(folders.get(assign),files.get(files));
+
+
   }//end main
+
+  public static String gather(String folder, String file){
+    String root = System.getProperty("user.dir");
+    deleteFolder("testing");
+    //https://stackoverflow.com/questions/2581158/java-how-to-get-all-subdirs-recursively
+    File file = new File(root);
+    File[] subdirs = file.listFiles(newFileFileter() {
+      public boolean accept(File f){
+        return f.isDirector();
+      }
+    })
+    new File("testing").mkdirs();
+    for (int i=0;i<subdirs.length; i++){
+      
+    }
+  }//end gather
+
+  public static void deleteFolder(String dir){
+    //https://stackoverflow.com/questions/779519/delete-directories-recursively-in-java/27917071#27917071
+    try{
+      Path directory = Paths.get("dir");
+      Files.walkFileTree(directory, new SimpleFileVisitor<Path>(){
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException{
+          Files.delete(file);
+          return FileVisitResult.CONTINUE;
+        }
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException{
+          Files.delete(dir);
+          return FileVisitResult.CONTINUE;
+        }
+      });
+    }//end try
+      catch (Exception e){
+        ;//do nothing
+      }//end catch
+  }//end deleteFolder
 
   public static String intro(Scanner s, Dictionary files){
     String assign;
@@ -20,7 +65,7 @@ public class Grader{
       assign = s.nextLine();
       System.out.print
       String check = files.get(assign);
-      if (check != null){    
+      if (check != null){
         n = false;
       }
       else{
