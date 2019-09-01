@@ -2,7 +2,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.*;
 
-public class test{
+public class testDatesGit{
   private ByteArrayOutputStream TOut;
   private ByteArrayInputStream TIn;
   private final PrintStream SOut = System.out;
