@@ -3,7 +3,7 @@ import java.io.*;
 import java.time.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
-import RunSystemCommands;
+import Command;
 
 public class Grader{
   public static void main(String[] args){

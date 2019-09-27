@@ -8,7 +8,7 @@ public class Command{
     String output = "";
     try{
       p = Runtime.getRuntime().exec(command);
-      BufferedReader br = newBufferedReader(new InputStreamReader(p.getInputStream()));
+      BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
       while ((s = br.readLine()) != null){
         output += s+"\n";
       }
