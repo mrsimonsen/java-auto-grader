@@ -60,7 +60,7 @@ def gather(assignment, file):
     PIPE = subprocess.PIPE
     for folder in subfolders:
         name = folder+'_'+file
-        shutil.copyfile(os.path.join(root,folder,assignment,file), os.path.join(root,'testing',name))
+        shutil.copyfile(os.path.join(root,folder, assignment,file), os.path.join(root,'testing',name))
         os.chdir(folder)
         p = subprocess.Popen(["git","log","-1","--format=%ci"],stdout=PIPE)
         out = p.communicate()[0].decode()
