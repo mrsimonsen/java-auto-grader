@@ -13,10 +13,11 @@ public class Grader{
     Dictionary folders = set_assignment_folders();
     Dictionary dates = set_due_dates();
     String assign = intro(s, files);
-    System.out.print("--Gathering files--");
+    System.out.println("--Gathering Files--");
     Dictionary days = gather(folders.get(assign),files.get(files));
-
-
+    System.out.println("--Grading Files--");
+    grade(file, days, dates);
+    System.out.println("--Testing Complete--");
   }//end main
 
   public static String gather(String folder, String file){
