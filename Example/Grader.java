@@ -3,6 +3,7 @@ import java.io.*;
 import java.time.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
+import java.util.stream.Stream;
 
 public class Grader{
   public static void main(String[] args){
@@ -16,9 +17,54 @@ public class Grader{
     System.out.println("--Gathering Files--");
     Dictionary days = gather(folders.get(assign),files.get(files));
     System.out.println("--Grading Files--");
-    grade(file, days, dates);
+    grade(assign, files, days, dates);
     System.out.println("--Testing Complete--");
   }//end main
+
+  public static void grade(String assign, Dictonary file, Dictorinay days, Dictoionary due){
+    String root = System.getProperty("user.dir");
+    Dictionary username = format_usernames();
+    Command c = new Command();
+    c.run("cd testing");
+    FileWriter write = new FileWriter("report.csv");
+    String[] header = {"GitHub_File","Weber name", "points earned", "is late?"};
+    csvWriter(header, write);
+    String name = files.get(assign);
+    ArrayList<Path> filePaths = getFiles(name);
+    
+    //TODO
+
+  }//end grade method
+
+  public static ArrayList<Path> getFiles(String name){
+    ArrayList<Path> filePaths = new ArrayList<Path>();
+    try{
+      Files.walk(Paths.get(System.getProperty("user.dir")+"/testing")).filter(Files::isRegularFile).filter(s->s.endsWith(name)).forEach(y->filePaths.add(y));
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+    return filePaths;
+  }
+
+  public static void csvWriter(String[] data, FileWriter writer){
+    for (int i = 0; i < data.length, i++){
+      writer.append(data[i]);
+    }
+    writer.append("\n");//don't forget that newline
+    writer.flush();//sync changes
+  }
+
+//https://stackabuse.com/reading-and-writing-csvs-in-java/
+  public static Dictionary format_usernamets(){
+    Dictionary username = new Hashtable();
+    BufferedReader reader = new BufferedReader(new FileReader('1030 usernames - Form Responsees 1.csv'));
+    while ((row == csvReader.readLine()) != null){
+      String[] data = row.split(",");
+      username.put(data[1],data[2]);
+    }
+    reader.close();
+    return username;
+  }
 
   public static String gather(String folder, String file){
     String root = System.getProperty("user.dir");
@@ -42,13 +88,13 @@ public class Grader{
       //can't chagne the destination file name -needs to be the same as the class name
       dest = root + "/testing/" + folder +"/" + file;
       copyFile(new File(source), new File(dest));
-      c.run("cd /"+folder);
+      c.run("cd "+folder);
       gout = c.run("git log -1 --format=%ci");
       c.run("cd ..");
       time = makeTime(gout);
       days.put(folder,time);
     }
-    return days
+    return days;
   }//end gather
 
 public static LocalDateTime makeTime(String gout){
@@ -147,28 +193,28 @@ public static void copyFile(File source, File dest){
   public static Dictionary set_assignment_folders(){
     Dictionary f = new Hashtable();
     f.put("1","test1");
-    f.put("00","00HelloWorld.java");
-    f.put("01","01BasicInput.java");
-    f.put("02","02PaintEstimator.java");
-    f.put("03","03TextMsgAbbreviation.java");
-    f.put("04","04TextMsgDecoder.java");
-    f.put("05","05TextMsgExpander.java");
-    f.put("06","06DrawRightTriangle.java");
-    f.put("07","07DrawHalfArrow.java");
-    f.put("08","08PeopleWeights.java");
-    f.put("09","09PlayerRoster.java");
-    f.put("10","10CoinFlipper.java");
-    f.put("11","11ReverseMessage.java");
-    f.put("12","12DiceStats.java");
-    f.put("13","13TextAnalyzer.java");
-    f.put("14","14AuthoringAssistant.java");
-    f.put("15","15ShoppingCartPrinter.java");
-    f.put("16","16ShoppingCartManager.java");
-    f.put("17","17BinaryConverter.java");
-    f.put("18","18ParseStrings.java");
-    f.put("19","19DataVisualizer.java");
-    f.put("20","20CaesarCipher.java");
-    f.put("21","21Yahtzee.java");
+    f.put("00","00HelloWorld");
+    f.put("01","01BasicInput");
+    f.put("02","02PaintEstimator");
+    f.put("03","03TextMsgAbbreviation");
+    f.put("04","04TextMsgDecoder");
+    f.put("05","05TextMsgExpander");
+    f.put("06","06DrawRightTriangle");
+    f.put("07","07DrawHalfArrow");
+    f.put("08","08PeopleWeights");
+    f.put("09","09PlayerRoster");
+    f.put("10","10CoinFlipper");
+    f.put("11","11ReverseMessage");
+    f.put("12","12DiceStats");
+    f.put("13","13TextAnalyzer");
+    f.put("14","14AuthoringAssistant");
+    f.put("15","15ShoppingCartPrinter");
+    f.put("16","16ShoppingCartManager");
+    f.put("17","17BinaryConverter");
+    f.put("18","18ParseStrings");
+    f.put("19","19DataVisualizer");
+    f.put("20","20CaesarCipher");
+    f.put("21","21Yahtzee");
 
     return f;
   }
