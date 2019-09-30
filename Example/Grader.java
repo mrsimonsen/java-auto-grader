@@ -31,7 +31,9 @@ public class Grader{
     csvWriter(header, write);
     String name = files.get(assign);
     ArrayList<Path> filePaths = getFiles(name);
-    
+    for (Path file : filePaths){
+      //run junit test @ file
+    }
     //TODO
 
   }//end grade method
