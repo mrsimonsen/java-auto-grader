@@ -30,14 +30,36 @@ public class Grader{
       }
     })
     new File("testing").mkdirs();
-    String source = root + "/" + folder +"/" + file;
-    //can't chagne the destination file name -needs to be the same as the class name
-    String dest = root + "/testing/" + folder +"/" + file;
+    Command c = new Command();
+    LocalDateTime time;
+    String gout;
+    String source;
+    String dest;
+    Dictionary days = new Hashtable();
     for (int i=0;i<subdirs.length; i++){
-      //TODO
-      copyFile()
+      source = root + "/" + folder +"/" + file;
+      //can't chagne the destination file name -needs to be the same as the class name
+      dest = root + "/testing/" + folder +"/" + file;
+      copyFile(new File(source), new File(dest));
+      c.run("cd /"+folder);
+      gout = c.run("git log -1 --format=%ci");
+      c.run("cd ..");
+      time = makeTime(gout);
+      days.put(folder,time);
     }
+    return days
   }//end gather
+
+public static LocalDateTime makeTime(String gout){
+  int year = Integer.parseInt(gout.substring(0,4));
+  int month = Integer.parseInt(gout.substring(5,7));
+  int day = Integer.parseInt(gout.substring(8,10));
+  int hour = Integer.parseInt(gout.substring(11,13));
+  int min = Integer.parseInt(gout.substring(14,16));
+  int sec = Integer.parseInt(gout.substring(17,19));
+  LocalDateTime time = LocalDateTime.of(year, month, day, hour, min, sec);
+  return time;
+}
 
 //https://www.journaldev.com/861/java-copy-file
 public static void copyFile(File source, File dest){
