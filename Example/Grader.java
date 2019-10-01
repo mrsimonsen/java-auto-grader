@@ -4,6 +4,7 @@ import java.time.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.stream.Stream;
+import java.lang.Math;
 
 public class Grader{
   public static void main(String[] args){
@@ -13,15 +14,16 @@ public class Grader{
     Dictionary files = set_assignment_names();
     Dictionary folders = set_assignment_folders();
     Dictionary dates = set_due_dates();
+    Dictionary tests = set_test_names();
     String assign = intro(s, files);
     System.out.println("--Gathering Files--");
-    Dictionary days = gather(folders.get(assign),files.get(files));
+    Dictionary days = gather(folders.get(assign),files.get(assign), tests.get(assign));
     System.out.println("--Grading Files--");
-    grade(assign, files, days, dates);
+    grade(assign, tests, days, dates);
     System.out.println("--Testing Complete--");
   }//end main
 
-  public static void grade(String assign, Dictonary file, Dictorinay days, Dictoionary due){
+  public static void grade(String assign, Dictionary tests, Dictorinay days, Dictoionary due){
     String root = System.getProperty("user.dir");
     Dictionary username = format_usernames();
     Command c = new Command();
@@ -29,14 +31,50 @@ public class Grader{
     FileWriter write = new FileWriter("report.csv");
     String[] header = {"GitHub_File","Weber name", "points earned", "is late?"};
     csvWriter(header, write);
-    String name = files.get(assign);
-    ArrayList<Path> filePaths = getFiles(name);
-    for (Path file : filePaths){
-      //run junit test @ file
+    String name = tests.get(assign);
+    ArrayList<Path> testPaths = getFiles(name);
+    String folder;
+    String student;
+    boolean late = true;
+    String points;
+    for (String file.toString() : testPaths){
+      //get into a folder
+      folder = file.substring(0,file.length()-name.length());
+      c.run("cd "+folder);
+      //Compile test and dependicies
+      c.run("javac "+file);
+      points = c.run("java "+name.substring(0, name.length()-4));
+      //go back to testing folder
+      c.run("cd ..");
+      //get data for csv
+
     }
     //TODO
 
   }//end grade method
+  public static double string_to_math(String points){
+    double total;
+    int score;
+    //single digit values
+    if(points.length()%3==0){
+      score = Integer.parseInt(points.substring(0,1));
+      total = Integer.parseInt(points.substring(2,3));
+      total = Math.round(score/total*10);
+    }
+    //double digit values
+    else if(points.length()%5==0){
+      total = Integer.parseInt(points.substring(3,5));
+      score = Integer.parseInt(points.substring(0,2));
+      total = Math.round(score/total*100.0)/10.0;
+    }
+    //single digit score with 2 digit total
+    else{
+      total = Integer.parseInt(points.substring(2,4));
+      score = Integer.parseInt(points.substring(0,1));
+      total = Math.round(score/total*100.0)/10.0;
+    }
+    return total;
+  }//end string_to_math
 
   public static ArrayList<Path> getFiles(String name){
     ArrayList<Path> filePaths = new ArrayList<Path>();
@@ -68,28 +106,33 @@ public class Grader{
     return username;
   }
 
-  public static String gather(String folder, String file){
+  public static String gather(String folder, String file, String testName){
     String root = System.getProperty("user.dir");
     deleteFolder("testing");
     //https://stackoverflow.com/questions/2581158/java-how-to-get-all-subdirs-recursively
     File file = new File(root);
     File[] subdirs = file.listFiles(newFileFileter() {
       public boolean accept(File f){
-        return f.isDirector();
+        return f.isDirectory();
       }
     })
     new File("testing").mkdirs();
     Command c = new Command();
-    LocalDateTime time;
+        LocalDateTime time;
     String gout;
     String source;
     String dest;
+    String testSource;
+    String testDest;
     Dictionary days = new Hashtable();
     for (int i=0;i<subdirs.length; i++){
       source = root + "/" + folder +"/" + file;
       //can't chagne the destination file name -needs to be the same as the class name
       dest = root + "/testing/" + folder +"/" + file;
+      testSource = root + "/" + folder +"/" + testName;
+      testDest = root + "/testing/" + folder +"/" + testName;
       copyFile(new File(source), new File(dest));
+      copyFile(new File(testSource), new File(testDest));
       c.run("cd "+folder);
       gout = c.run("git log -1 --format=%ci");
       c.run("cd ..");
@@ -226,5 +269,11 @@ public static void copyFile(File source, File dest){
     //d.put("00",LocalDateTime.of(2020,month,day,11,59,59))
 
     return d;
+  }
+  public static Dictionary set_test_names(){
+    Dictionary t = new Hastable();
+    t.put("1", "test_hi.java");
+
+    return t;
   }
 }

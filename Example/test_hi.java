@@ -1,38 +1,45 @@
-import org.junit.*;
-import static org.junit.Assert.*;
 import java.io.*;
 
 public class test_hi {
-  hi student = new hi();
-  private ByteArrayOutputStream TOut;
-  private ByteArrayInputStream TIn;
-  private final PrintStream SOut = System.out;
-  private final InputStream SIn = System.in;
-  String[] args = {};
+  static hi student = new hi();
+  private static ByteArrayOutputStream TOut;
+  private static ByteArrayInputStream TIn;
+  private static final PrintStream SOut = System.out;
+  private static final InputStream SIn = System.in;
+  static String[] args = {};
 
-  @Test
-  public void test1(){
+
+  public static String tests(){
+    int total = 0;
+    int score = 0;
+    setOutput();
+    //test 1
+    total++;
     student.main(args);
     String correct = "hi\n";
     String result = getOutput().substring(0,correct.length());
-    assertEquals(correct, result);
+    if (result.equals(correct)){
+      score++;
+    }
+    
+    restoreSystem();
+    String rep = ""+ score +"/"+total;
+    return rep;
   }
 
   //Set up methods
-  @Before
-  public void setOutput(){
+  public static void setOutput(){
     TOut = new ByteArrayOutputStream();
     System.setOut(new PrintStream(TOut));
   }
-  private void setInput(String data){
+  private static void setInput(String data){
     TIn = new ByteArrayInputStream(data.getBytes());
     System.setIn(TIn);
   }
-  private String getOutput(){
+  private static String getOutput(){
     return TOut.toString();
   }
-  @After
-  public void restoreSystem(){
+  public static void restoreSystem(){
     System.setOut(SOut);
     System.setIn(SIn);
   }
