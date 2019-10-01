@@ -23,7 +23,7 @@ public class Grader{
     System.out.println("--Testing Complete--");
   }//end main
 
-  public static void grade(String assign, Dictionary tests, Dictorinay days, Dictoionary dates){
+  public static void grade(String assign, Dictionary tests, Dictionary days, Dictionary dates){
     String root = System.getProperty("user.dir");
     Dictionary username = format_usernames();
     Command c = new Command();
@@ -38,8 +38,10 @@ public class Grader{
     boolean late = "TRUE";
     double points;
     String[] row = new String[4];
-    for (String file.toString() : testPaths){
+    String file;
+    for (int i=0; i< testPaths.size(); i++){
       //get into a folder
+      file = testPaths.get(i).toString();
       folder = file.substring(0,file.length()-name.length());
       System.out.println("Grading "+folder);
       c.run("cd "+folder);
@@ -93,7 +95,7 @@ public class Grader{
   }
 
   public static void csvWriter(String[] data, FileWriter writer){
-    for (int i = 0; i < data.length, i++){
+    for (int i = 0; i < data.length; i++){
       writer.append(data[i]);
     }
     writer.append("\n");//don't forget that newline
@@ -103,7 +105,7 @@ public class Grader{
 //https://stackabuse.com/reading-and-writing-csvs-in-java/
   public static Dictionary format_usernames(){
     Dictionary username = new Hashtable();
-    BufferedReader reader = new BufferedReader(new FileReader('1400 usernames - Form Responsees 1.csv'));
+    BufferedReader reader = new BufferedReader(new FileReader("1400 usernames - Form Responsees 1.csv"));
     String first;
     String last;
     String github;
@@ -128,11 +130,11 @@ public class Grader{
     deleteFolder("testing");
     //https://stackoverflow.com/questions/2581158/java-how-to-get-all-subdirs-recursively
     File file = new File(root);
-    File[] subdirs = file.listFiles(newFileFileter() {
+    File[] subdirs = file.listFiles(new FileFileter(){
       public boolean accept(File f){
         return f.isDirectory();
       }
-    })
+    });
     new File("testing").mkdirs();
     Command c = new Command();
         LocalDateTime time;
@@ -212,7 +214,6 @@ public static void copyFile(File source, File dest){
     while (n){
       System.out.println("What is the number of the assignment folder?");
       assign = s.nextLine();
-      System.out.print
       String check = files.get(assign);
       if (check != null){
         n = false;
