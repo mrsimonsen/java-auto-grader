@@ -23,7 +23,7 @@ public class Grader{
     System.out.println("--Testing Complete--");
   }//end main
 
-  public static void grade(String assign, Dictionary tests, Dictorinay days, Dictoionary due){
+  public static void grade(String assign, Dictionary tests, Dictorinay days, Dictoionary dates){
     String root = System.getProperty("user.dir");
     Dictionary username = format_usernames();
     Command c = new Command();
@@ -35,23 +35,29 @@ public class Grader{
     ArrayList<Path> testPaths = getFiles(name);
     String folder;
     String student;
-    boolean late = true;
-    String points;
+    boolean late = "TRUE";
+    double points;
+    String[] row = new String[4];
     for (String file.toString() : testPaths){
       //get into a folder
       folder = file.substring(0,file.length()-name.length());
+      System.out.println("Grading "+folder);
       c.run("cd "+folder);
       //Compile test and dependicies
       c.run("javac "+file);
-      points = c.run("java "+name.substring(0, name.length()-4));
+      points = string_to_math(c.run("java "+name.substring(0, name.length()-4)));
       //go back to testing folder
       c.run("cd ..");
       //get data for csv
-
+      student = username.get(folder);
+      if (day.get(folder).isBefore(dates.get(assign))){
+        late = FALSE;
+      }
+      csvWriter(row, write);
     }
-    //TODO
-
+    write.close();
   }//end grade method
+
   public static double string_to_math(String points){
     double total;
     int score;
@@ -95,12 +101,23 @@ public class Grader{
   }
 
 //https://stackabuse.com/reading-and-writing-csvs-in-java/
-  public static Dictionary format_usernamets(){
+  public static Dictionary format_usernames(){
     Dictionary username = new Hashtable();
-    BufferedReader reader = new BufferedReader(new FileReader('1030 usernames - Form Responsees 1.csv'));
+    BufferedReader reader = new BufferedReader(new FileReader('1400 usernames - Form Responsees 1.csv'));
+    String first;
+    String last;
+    String github;
+    String student;
+    //skipping first line - header
+    String[] data = csvReader.readLine().split(",");
     while ((row == csvReader.readLine()) != null){
-      String[] data = row.split(",");
-      username.put(data[1],data[2]);
+      //don't need weber state names, just match github with name
+      data = row.split(",");
+      first = data[1];
+      last = data[2];
+      github = data[3];
+      student = String.join(",",last,first);
+      username.put(github,student);
     }
     reader.close();
     return username;
