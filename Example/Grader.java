@@ -17,7 +17,7 @@ public class Grader{
     Dictionary tests = set_test_names();
     String assign = intro(s, files);
     System.out.println("--Gathering Files--");
-    Dictionary days = gather(folders.get(assign),files.get(assign), tests.get(assign));
+    Dictionary days = gather(folders.get(assign).toString(), files.get(assign).toString(), tests.get(assign).toString());
     System.out.println("--Grading Files--");
     grade(assign, tests, days, dates);
     System.out.println("--Testing Complete--");
@@ -31,11 +31,11 @@ public class Grader{
     FileWriter write = new FileWriter("report.csv");
     String[] header = {"GitHub_File","Weber name", "points earned", "is late?"};
     csvWriter(header, write);
-    String name = tests.get(assign);
+    String name = tests.get(assign).toString();
     ArrayList<Path> testPaths = getFiles(name);
     String folder;
     String student;
-    boolean late = "TRUE";
+    String late = "TRUE";
     double points;
     String[] row = new String[4];
     String file;
@@ -51,9 +51,9 @@ public class Grader{
       //go back to testing folder
       c.run("cd ..");
       //get data for csv
-      student = username.get(folder);
-      if (day.get(folder).isBefore(dates.get(assign))){
-        late = FALSE;
+      student = username.get(folder).toString();
+      if (days.get(folder).isBefore(dates.get(assign))){
+        late = "FALSE";
       }
       csvWriter(row, write);
     }
@@ -125,12 +125,12 @@ public class Grader{
     return username;
   }
 
-  public static String gather(String folder, String file, String testName){
+  public static Dictionary gather(String folder, String sfile, String testName){
     String root = System.getProperty("user.dir");
     deleteFolder("testing");
     //https://stackoverflow.com/questions/2581158/java-how-to-get-all-subdirs-recursively
     File file = new File(root);
-    File[] subdirs = file.listFiles(new FileFileter(){
+    File[] subdirs = file.listFiles(new FileFilter(){
       public boolean accept(File f){
         return f.isDirectory();
       }
@@ -145,9 +145,9 @@ public class Grader{
     String testDest;
     Dictionary days = new Hashtable();
     for (int i=0;i<subdirs.length; i++){
-      source = root + "/" + folder +"/" + file;
+      source = root + "/" + folder +"/" + sfile;
       //can't chagne the destination file name -needs to be the same as the class name
-      dest = root + "/testing/" + folder +"/" + file;
+      dest = root + "/testing/" + folder +"/" + sfile;
       testSource = root + "/" + folder +"/" + testName;
       testDest = root + "/testing/" + folder +"/" + testName;
       copyFile(new File(source), new File(dest));
@@ -214,7 +214,7 @@ public static void copyFile(File source, File dest){
     while (n){
       System.out.println("What is the number of the assignment folder?");
       assign = s.nextLine();
-      String check = files.get(assign);
+      String check = files.get(assign).toString();
       if (check != null){
         n = false;
       }
@@ -289,7 +289,7 @@ public static void copyFile(File source, File dest){
     return d;
   }
   public static Dictionary set_test_names(){
-    Dictionary t = new Hastable();
+    Dictionary t = new Hashtable();
     t.put("1", "test_hi.java");
 
     return t;
