@@ -13,17 +13,17 @@ public class Grader{
     System.out.println("This program nees to be ran from the parent directory of the collection of student repos");
     Dictionary files = set_assignment_names();
     Dictionary folders = set_assignment_folders();
-    Dictionary dates = set_due_dates();
+    Map dates = set_due_dates();
     Dictionary tests = set_test_names();
     String assign = intro(s, files);
     System.out.println("--Gathering Files--");
-    Dictionary days = gather(folders.get(assign).toString(), files.get(assign).toString(), tests.get(assign).toString());
+    Map days = gather(folders.get(assign).toString(), files.get(assign).toString(), tests.get(assign).toString());
     System.out.println("--Grading Files--");
     grade(assign, tests, days, dates);
     System.out.println("--Testing Complete--");
   }//end main
 
-  public static void grade(String assign, Dictionary tests, Dictionary days, Dictionary dates){
+  public static void grade(String assign, Dictionary tests, Map days, Map dates){
     String root = System.getProperty("user.dir");
     Dictionary username = format_usernames();
     Command c = new Command();
@@ -110,9 +110,10 @@ public class Grader{
     String last;
     String github;
     String student;
+    String row;
     //skipping first line - header
-    String[] data = csvReader.readLine().split(",");
-    while ((row == csvReader.readLine()) != null){
+    String[] data = reader.readLine().split(",");
+    while ((row = reader.readLine()) != null){
       //don't need weber state names, just match github with name
       data = row.split(",");
       first = data[1];
@@ -125,7 +126,7 @@ public class Grader{
     return username;
   }
 
-  public static Dictionary gather(String folder, String sfile, String testName){
+  public static Map gather(String folder, String sfile, String testName){
     String root = System.getProperty("user.dir");
     deleteFolder("testing");
     //https://stackoverflow.com/questions/2581158/java-how-to-get-all-subdirs-recursively
@@ -137,13 +138,13 @@ public class Grader{
     });
     new File("testing").mkdirs();
     Command c = new Command();
-        LocalDateTime time;
+    LocalDateTime time;
     String gout;
     String source;
     String dest;
     String testSource;
     String testDest;
-    Dictionary days = new Hashtable();
+    Map<String,LocalDateTime> days = new HashMap<String,LocalDateTime>();
     for (int i=0;i<subdirs.length; i++){
       source = root + "/" + folder +"/" + sfile;
       //can't chagne the destination file name -needs to be the same as the class name
@@ -281,8 +282,8 @@ public static void copyFile(File source, File dest){
 
     return f;
   }
-  public static Dictionary set_due_dates(){
-    Dictionary d = new Hashtable();
+  public static Map set_due_dates(){
+    Map<String, LocalDateTime> d = new HashMap<String,LocalDateTime>();
     d.put("1",LocalDateTime.of(2019,8,30,7,27,30));
     //d.put("00",LocalDateTime.of(2020,month,day,11,59,59))
 
