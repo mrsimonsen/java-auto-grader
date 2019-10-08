@@ -16,17 +16,17 @@ public class Grader{
     Dictionary<String,String> folders = set_assignment_folders();
     Dictionary<String,LocalDateTime> dates = set_due_dates();
     Dictionary<String,String> tests = set_test_names();
-    Dictionary<String,String> username = format_usernames();
     String assign = intro(s, files);
     System.out.println("--Gathering Files--");
-    Dictionary<String,LocalDateTime> days = gather(folders.get(assign), files.get(assign), tests.get(assign), username);
+    Dictionary<String,LocalDateTime> days = gather(folders.get(assign), files.get(assign), tests.get(assign));
     System.out.println("--Grading Files--");
     grade(assign, tests, days, dates);
     System.out.println("--Testing Complete--");
   }//end main
 
-  public static void grade(String assign, Dictionary<String,String> tests, Dictionary<String,LocalDateTime> days, Dictionary<String,LocalDateTime> dates, Dictionary<String, String> username) throws IOException{
+  public static void grade(String assign, Dictionary<String,String> tests, Dictionary<String,LocalDateTime> days, Dictionary<String,LocalDateTime> dates) throws IOException{
     String root = System.getProperty("user.dir");
+    Dictionary <String, String> username = format_usernames();
     Command c = new Command();
     c.run("cd testing");
     FileWriter write = null;
@@ -132,7 +132,7 @@ public class Grader{
     return username;
   }
 
-  public static Dictionary<String,LocalDateTime> gather(String folder, String sfile, String testName, Dictionary<String,String> username) throws IOException{
+  public static Dictionary<String,LocalDateTime> gather(String folder, String sfile, String testName) throws IOException{
     String root = System.getProperty("user.dir");
     deleteFolder("testing");
     //https://stackoverflow.com/questions/2581158/java-how-to-get-all-subdirs-recursively
@@ -150,22 +150,24 @@ public class Grader{
     String dest;
     String testSource;
     String testDest;
+    int len = root.length();
+    String name = "";
     Dictionary<String,LocalDateTime> days = new Hashtable<String,LocalDateTime>();
     for (int i=0;i<subdirs.length; i++){
-      source = subdirs[i] + "\\" +folder +"\\" + sfile;
+      name = subdirs[i].toString().substring(len + 1);
+      source = subdirs[i]+"\\" +folder+"\\"+sfile;
       //can't chagne the destination file name -needs to be the same as the class name
-      //TODO add student name folder,
-      dest = root + "\\testing\\" + folder +"\\" + sfile;
-      testSource = root + "\\" + folder +"\\" + testName;
-      testDest = root + "\\testing\\" + folder +"\\" + testName;
-      destRoot = new File(dest).mkdirs();
-      copyFile(new File(source), new File(destRoot + "\\" + sfile));
+      dest = root+"\\testing\\"+"\\"+name+"\\"+folder;
+      testSource = root+"\\"+folder+"\\"+testName;
+      testDest = root+"\\testing\\"+folder+"\\"+testName;
+      new File(dest).mkdirs();
+      copyFile(new File(source), new File(dest+"\\"+sfile));
       copyFile(new File(testSource), new File(testDest));
-      c.run("cd "+folder);
+      c.run("cd "+name);
       gout = c.run("git log -1 --format=%ci");
       c.run("cd ..");
       time = makeTime(gout);
-      days.put(folder,time);
+      days.put(name,time);
     }
     return days;
   }//end gather
