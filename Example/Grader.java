@@ -3,6 +3,7 @@ import java.io.*;
 import java.time.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
+import java.nio.channels.*;
 import java.util.stream.Stream;
 import java.lang.Math;
 
@@ -175,11 +176,11 @@ public static LocalDateTime makeTime(String gout){
 
 //https://www.journaldev.com/861/java-copy-file
 public static void copyFile(File source, File dest){
-  FileChannel sourseChannel = null;
+  FileChannel sourceChannel = null;
   FileChannel destChannel = null;
   try{
-    sourceChannel = new FileInputStream(souce).getChannel();
-    destChannel = new FileOutputSteam(dest).getChannel();
+    sourceChannel = new FileInputStream(source).getChannel();
+    destChannel = new FileOutputStream(dest).getChannel();
     destChannel.transferFrom(sourceChannel,0,sourceChannel.size());
   }finally{
     sourceChannel.close();
