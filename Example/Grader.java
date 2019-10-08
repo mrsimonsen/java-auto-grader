@@ -8,31 +8,36 @@ import java.util.stream.Stream;
 import java.lang.Math;
 
 public class Grader{
-  public static void main(String[] args){
+  public static void main(String[] args) throws IOException{
     Scanner s = new Scanner(System.in);
     System.out.println("Java Grader");
     System.out.println("This program nees to be ran from the parent directory of the collection of student repos");
-    Dictionary files = set_assignment_names();
-    Dictionary folders = set_assignment_folders();
-    Map dates = set_due_dates();
-    Dictionary tests = set_test_names();
+    Dictionary<String,String> files = set_assignment_names();
+    Dictionary<String,String> folders = set_assignment_folders();
+    Dictionary<String,LocalDateTime> dates = set_due_dates();
+    Dictionary<String,String> tests = set_test_names();
     String assign = intro(s, files);
     System.out.println("--Gathering Files--");
-    Map days = gather(folders.get(assign).toString(), files.get(assign).toString(), tests.get(assign).toString());
+    Dictionary<String,LocalDateTime> days = gather(folders.get(assign), files.get(assign), tests.get(assign));
     System.out.println("--Grading Files--");
     grade(assign, tests, days, dates);
     System.out.println("--Testing Complete--");
   }//end main
 
-  public static void grade(String assign, Dictionary tests, Map days, Map dates){
+  public static void grade(String assign, Dictionary<String,String> tests, Dictionary<String,LocalDateTime> days, Dictionary<String,LocalDateTime> dates) throws IOException{
     String root = System.getProperty("user.dir");
-    Dictionary username = format_usernames();
+    Dictionary<String,String> username = format_usernames();
     Command c = new Command();
     c.run("cd testing");
-    FileWriter write = new FileWriter("report.csv");
+    FileWriter write = null;
+    try{
+      write = new FileWriter("report.csv");
+    }catch (Exception e){
+      e.printStackTrace();
+    }
     String[] header = {"GitHub_File","Weber name", "points earned", "is late?"};
     csvWriter(header, write);
-    String name = tests.get(assign).toString();
+    String name = tests.get(assign);
     ArrayList<Path> testPaths = getFiles(name);
     String folder;
     String student;
@@ -52,7 +57,7 @@ public class Grader{
       //go back to testing folder
       c.run("cd ..");
       //get data for csv
-      student = username.get(folder).toString();
+      student = username.get(folder);
       if (days.get(folder).isBefore(dates.get(assign))){
         late = "FALSE";
       }
@@ -95,7 +100,7 @@ public class Grader{
     return filePaths;
   }
 
-  public static void csvWriter(String[] data, FileWriter writer){
+  public static void csvWriter(String[] data, FileWriter writer) throws IOException{
     for (int i = 0; i < data.length; i++){
       writer.append(data[i]);
     }
@@ -104,8 +109,8 @@ public class Grader{
   }
 
 //https://stackabuse.com/reading-and-writing-csvs-in-java/
-  public static Dictionary format_usernames(){
-    Dictionary username = new Hashtable();
+  public static Dictionary<String,String> format_usernames() throws FileNotFoundException, IOException{
+    Dictionary<String,String> username = new Hashtable<String,String>();
     BufferedReader reader = new BufferedReader(new FileReader("1400 usernames - Form Responsees 1.csv"));
     String first;
     String last;
@@ -127,7 +132,7 @@ public class Grader{
     return username;
   }
 
-  public static Map gather(String folder, String sfile, String testName){
+  public static Dictionary<String,LocalDateTime> gather(String folder, String sfile, String testName) throws IOException{
     String root = System.getProperty("user.dir");
     deleteFolder("testing");
     //https://stackoverflow.com/questions/2581158/java-how-to-get-all-subdirs-recursively
@@ -145,13 +150,15 @@ public class Grader{
     String dest;
     String testSource;
     String testDest;
-    Map<String,LocalDateTime> days = new HashMap<String,LocalDateTime>();
+    Dictionary<String,LocalDateTime> days = new Hashtable<String,LocalDateTime>();
     for (int i=0;i<subdirs.length; i++){
-      source = root + "/" + folder +"/" + sfile;
+      source = subdirs[i] + "\\" +folder +"\\" + sfile;
       //can't chagne the destination file name -needs to be the same as the class name
-      dest = root + "/testing/" + folder +"/" + sfile;
-      testSource = root + "/" + folder +"/" + testName;
-      testDest = root + "/testing/" + folder +"/" + testName;
+      //TODO add student name folder
+      dest = root + "\\testing\\" + folder +"\\" + sfile;
+      testSource = root + "\\" + folder +"\\" + testName;
+      testDest = root + "\\testing\\" + folder +"\\" + testName;
+      System.out.println("--"+source+"--");
       copyFile(new File(source), new File(dest));
       copyFile(new File(testSource), new File(testDest));
       c.run("cd "+folder);
@@ -175,17 +182,12 @@ public static LocalDateTime makeTime(String gout){
 }
 
 //https://www.journaldev.com/861/java-copy-file
-public static void copyFile(File source, File dest){
-  FileChannel sourceChannel = null;
-  FileChannel destChannel = null;
-  try{
-    sourceChannel = new FileInputStream(source).getChannel();
-    destChannel = new FileOutputStream(dest).getChannel();
+public static void copyFile(File source, File dest) throws IOException{
+  FileChannel sourceChannel = new FileInputStream(source).getChannel();
+  FileChannel destChannel = new FileOutputStream(dest).getChannel();
     destChannel.transferFrom(sourceChannel,0,sourceChannel.size());
-  }finally{
     sourceChannel.close();
     destChannel.close();
-  }
 }
 
   public static void deleteFolder(String dir){
@@ -210,13 +212,13 @@ public static void copyFile(File source, File dest){
       }//end catch
   }//end deleteFolder
 
-  public static String intro(Scanner s, Dictionary files){
-    String assign;
+  public static String intro(Scanner s, Dictionary<String,String> files){
+    String assign= null;
     boolean n = true;
     while (n){
       System.out.println("What is the number of the assignment folder?");
       assign = s.nextLine();
-      String check = files.get(assign).toString();
+      String check = files.get(assign);
       if (check != null){
         n = false;
       }
@@ -227,8 +229,8 @@ public static void copyFile(File source, File dest){
     return assign;
   }//end intro
 
-  public static Dictionary set_assignment_names(){
-    Dictionary a = new Hashtable();
+  public static Dictionary<String,String> set_assignment_names(){
+    Dictionary<String, String> a = new Hashtable<String, String>();
     a.put("1","hi.java");
     a.put("00","HelloWorld.java");
     a.put("01","BasicInput.java");
@@ -255,8 +257,8 @@ public static void copyFile(File source, File dest){
 
     return a;
   }
-  public static Dictionary set_assignment_folders(){
-    Dictionary f = new Hashtable();
+  public static Dictionary<String,String> set_assignment_folders(){
+    Dictionary<String,String> f = new Hashtable<String,String>();
     f.put("1","test1");
     f.put("00","00HelloWorld");
     f.put("01","01BasicInput");
@@ -283,15 +285,15 @@ public static void copyFile(File source, File dest){
 
     return f;
   }
-  public static Map set_due_dates(){
-    Map<String, LocalDateTime> d = new HashMap<String,LocalDateTime>();
+  public static Dictionary<String,LocalDateTime> set_due_dates(){
+    Dictionary<String, LocalDateTime> d = new Hashtable<String,LocalDateTime>();
     d.put("1",LocalDateTime.of(2019,8,30,7,27,30));
     //d.put("00",LocalDateTime.of(2020,month,day,11,59,59))
 
     return d;
   }
-  public static Dictionary set_test_names(){
-    Dictionary t = new Hashtable();
+  public static Dictionary<String,String> set_test_names(){
+    Dictionary<String, String> t = new Hashtable<String, String>();
     t.put("1", "test_hi.java");
 
     return t;
