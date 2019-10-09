@@ -1,15 +1,18 @@
 import java.io.*;
 
 public class test_hi {
-  static hi student = new hi();
   private static ByteArrayOutputStream TOut;
   private static ByteArrayInputStream TIn;
   private static final PrintStream SOut = System.out;
   private static final InputStream SIn = System.in;
-  static String[] args = {};
+  public static String[] args;
 
+  public static void main(String[] args){
+    System.out.println(tests());
+  }
 
   public static String tests(){
+    Hi student = new Hi();
     int total = 0;
     int score = 0;
     setOutput();
@@ -21,7 +24,7 @@ public class test_hi {
     if (result.equals(correct)){
       score++;
     }
-    
+
     restoreSystem();
     String rep = ""+ score +"/"+total;
     return rep;

@@ -1,8 +1,8 @@
-public class hi{
+public class Hi{
   public static void main(String[] args){
-    System.out.println(hi());
+    sayHi();
   }
-  public static String hi(){
-    return "hi";
+  public static String sayHi(){
+    System.out.println("hi");
   }
 }

@@ -37,10 +37,10 @@ public class Grader{
     }
     String[] header = {"GitHub_File","Weber name", "points earned", "is late?"};
     csvWriter(header, write);
-    String name = tests.get(assign);
-    ArrayList<Path> testPaths = getFiles(name);
-    String folder;
-    String student;
+    String testName = tests.get(assign);
+    ArrayList<Path> testPaths = getFiles(testName);
+    String folder;//student GitHub name
+    String student;//student real name
     String late = "TRUE";
     double points;
     String[] row = new String[4];
@@ -48,12 +48,13 @@ public class Grader{
     for (int i=0; i< testPaths.size(); i++){
       //get into a folder
       file = testPaths.get(i).toString();
-      folder = file.substring(0,file.length()-name.length());
+      folder = file.substring((root+"\\testing\\").length(),file.length()-testName.length()-1);
       System.out.println("Grading "+folder);
       c.run("cd "+folder);
       //Compile test and dependicies
+      file = file.replace("\\","/");
       c.run("javac "+file);
-      points = string_to_math(c.run("java "+name.substring(0, name.length()-5)));
+      points = string_to_math(c.run("java "+file.substring(file.length()-5)));
       //go back to testing folder
       c.run("cd ..");
       //get data for csv
@@ -155,8 +156,6 @@ public class Grader{
     String name = "";
     Dictionary<String,LocalDateTime> days = new Hashtable<String,LocalDateTime>();
     testSource = root+"\\"+testName;
-    testDest = root+"\\testing\\"+testName;
-    copyFile(new File(testSource), new File(testDest));
     for (int i=0;i<subdirs.length; i++){
       name = subdirs[i].toString().substring(len + 1);
       source = subdirs[i]+"\\" +folder+"\\"+sfile;
@@ -164,6 +163,8 @@ public class Grader{
       dest = root+"\\testing\\"+"\\"+name;
       new File(dest).mkdirs();
       copyFile(new File(source), new File(dest+"\\"+sfile));
+      testDest = root+"\\testing\\"+name+"\\"+testName;
+      copyFile(new File(testSource), new File(testDest));
       c.run("cd "+name);
       gout = c.run("git log -1 --format=%ci");
       c.run("cd ..");
@@ -234,7 +235,7 @@ public static void copyFile(File source, File dest) throws IOException{
 
   public static Dictionary<String,String> set_assignment_names(){
     Dictionary<String, String> a = new Hashtable<String, String>();
-    a.put("1","hi.java");
+    a.put("1","Hi.java");
     a.put("00","HelloWorld.java");
     a.put("01","BasicInput.java");
     a.put("02","PaintEstimator.java");

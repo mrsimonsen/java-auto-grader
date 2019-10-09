@@ -6,7 +6,7 @@ import java.util.*;
 
 public class This{
   public static void main(String[] args){
-    String a = "this.java";
-    System.out.println(a.substring(0,a.length()-5));
+    Command c = new Command();
+    System.out.println(c.run("javac test_hi.java"));
   }
 }
