@@ -3,7 +3,7 @@ from data_maker import Assignment,Student
 from data_maker import main as setup
 
 def intro():
-    print("Python Grader")
+    print("Java Grader with Python")
     print("This program needs to be ran from the parent directory of the collection of student repos")
     print()
     setup()
