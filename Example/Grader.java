@@ -28,7 +28,7 @@ public class Grader{
     String root = System.getProperty("user.dir");
     Dictionary <String, String> username = format_usernames(root);
     Command c = new Command();
-    System.out.println(c.run("cd testing"));
+    System.out.println(c.run("cd "+root+"\\testing"));
     System.out.println(c.run("pwd"));
     FileWriter write = null;
     try{
