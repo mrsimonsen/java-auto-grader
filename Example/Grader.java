@@ -71,8 +71,8 @@ public class Grader{
     int score;
     //single digit values
     if(points.length()%3==0){
-      score = Integer.parseInt(points.substring(0,1));
-      total = Integer.parseInt(points.substring(2,3));
+      score = Integer.parseInt(String.valueOf(points.charAt(0)));
+      total = Integer.parseInt(String.valueOf(points.charAt(2)));
       total = Math.round(score/total*10);
     }
     //double digit values
@@ -84,7 +84,7 @@ public class Grader{
     //single digit score with 2 digit total
     else{
       total = Integer.parseInt(points.substring(2,4));
-      score = Integer.parseInt(points.substring(0,1));
+      score = Integer.parseInt(String.valueOf(points.charAt(0)));
       total = Math.round(score/total*100.0)/10.0;
     }
     return total;
@@ -211,7 +211,7 @@ public static void copyFile(File source, File dest) throws IOException{
       });
     }//end try
       catch (Exception e){
-        e.printStackTrace();
+        //e.printStackTrace();
       }//end catch
   }//end deleteFolder
 
