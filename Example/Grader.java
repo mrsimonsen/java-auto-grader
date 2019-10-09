@@ -26,7 +26,7 @@ public class Grader{
 
   public static void grade(String assign, Dictionary<String,String> tests, Dictionary<String,LocalDateTime> days, Dictionary<String,LocalDateTime> dates) throws IOException{
     String root = System.getProperty("user.dir");
-    Dictionary <String, String> username = format_usernames();
+    Dictionary <String, String> username = format_usernames(root);
     Command c = new Command();
     c.run("cd testing");
     FileWriter write = null;
@@ -53,7 +53,7 @@ public class Grader{
       c.run("cd "+folder);
       //Compile test and dependicies
       c.run("javac "+file);
-      points = string_to_math(c.run("java "+name.substring(0, name.length()-4)));
+      points = string_to_math(c.run("java "+name.substring(0, name.length()-5)));
       //go back to testing folder
       c.run("cd ..");
       //get data for csv
@@ -103,15 +103,16 @@ public class Grader{
   public static void csvWriter(String[] data, FileWriter writer) throws IOException{
     for (int i = 0; i < data.length; i++){
       writer.append(data[i]);
+      writer.append(",");
     }
     writer.append("\n");//don't forget that newline
     writer.flush();//sync changes
   }
 
 //https://stackabuse.com/reading-and-writing-csvs-in-java/
-  public static Dictionary<String,String> format_usernames() throws FileNotFoundException, IOException{
+  public static Dictionary<String,String> format_usernames(String root) throws FileNotFoundException, IOException{
     Dictionary<String,String> username = new Hashtable<String,String>();
-    BufferedReader reader = new BufferedReader(new FileReader("1400 usernames - Form Responsees 1.csv"));
+    BufferedReader reader = new BufferedReader(new FileReader(root+"\\1400 usernames - Form Responses 1.csv"));
     String first;
     String last;
     String github;
@@ -153,16 +154,16 @@ public class Grader{
     int len = root.length();
     String name = "";
     Dictionary<String,LocalDateTime> days = new Hashtable<String,LocalDateTime>();
+    testSource = root+"\\"+testName;
+    testDest = root+"\\testing\\"+testName;
+    copyFile(new File(testSource), new File(testDest));
     for (int i=0;i<subdirs.length; i++){
       name = subdirs[i].toString().substring(len + 1);
       source = subdirs[i]+"\\" +folder+"\\"+sfile;
       //can't chagne the destination file name -needs to be the same as the class name
-      dest = root+"\\testing\\"+"\\"+name+"\\"+folder;
-      testSource = root+"\\"+folder+"\\"+testName;
-      testDest = root+"\\testing\\"+folder+"\\"+testName;
+      dest = root+"\\testing\\"+"\\"+name;
       new File(dest).mkdirs();
       copyFile(new File(source), new File(dest+"\\"+sfile));
-      copyFile(new File(testSource), new File(testDest));
       c.run("cd "+name);
       gout = c.run("git log -1 --format=%ci");
       c.run("cd ..");
@@ -195,7 +196,7 @@ public static void copyFile(File source, File dest) throws IOException{
   public static void deleteFolder(String dir){
     //https://stackoverflow.com/questions/779519/delete-directories-recursively-in-java/27917071#27917071
     try{
-      Path directory = Paths.get("dir");
+      Path directory = Paths.get(dir);
       Files.walkFileTree(directory, new SimpleFileVisitor<Path>(){
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException{
@@ -210,7 +211,7 @@ public static void copyFile(File source, File dest) throws IOException{
       });
     }//end try
       catch (Exception e){
-        ;//do nothing
+        e.printStackTrace();
       }//end catch
   }//end deleteFolder
 
