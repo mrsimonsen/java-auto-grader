@@ -28,7 +28,8 @@ public class Grader{
     String root = System.getProperty("user.dir");
     Dictionary <String, String> username = format_usernames(root);
     Command c = new Command();
-    c.run("cd testing");
+    System.out.println(c.run("cd testing"));
+    System.out.println(c.run("pwd"));
     FileWriter write = null;
     try{
       write = new FileWriter("report.csv");
@@ -45,16 +46,22 @@ public class Grader{
     double points;
     String[] row = new String[4];
     String file;
+    String temp;
     for (int i=0; i< testPaths.size(); i++){
       //get into a folder
       file = testPaths.get(i).toString();
       folder = file.substring((root+"\\testing\\").length(),file.length()-testName.length()-1);
       System.out.println("Grading "+folder);
       c.run("cd "+folder);
+      System.out.println(c.run("pwd"));
       //Compile test and dependicies
       file = file.replace("\\","/");
       c.run("javac "+file);
-      points = string_to_math(c.run("java "+file.substring(file.length()-5)));
+      temp = "java "+file.substring(0,file.length()-5);
+      System.out.println(temp);
+      temp =c.run(temp);
+      System.out.println(temp);
+      points = string_to_math(temp);
       //go back to testing folder
       c.run("cd ..");
       //get data for csv
