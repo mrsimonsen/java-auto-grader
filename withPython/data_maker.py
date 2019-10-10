@@ -19,7 +19,7 @@ class Student(object):
     def __init__(self, name, github):
         self.name = name
         self.github = github
-        self.assignment = Assignment('error','',datetime.datetime.today())
+        self.assignment = Assignment('error','',datetime.datetime.today(),'')
         self.score = 0
         self.late = True
         self.submit = None
@@ -62,30 +62,31 @@ def main():
     "19":"DataVisualizer.java",
     "20":"CaesarCipher.java",
     "21":"Yahtzee.java"}
-    folders = {"1":"test1"),
-    "00":"00HelloWorld"),
-    "01":"01BasicInput"),
-    "02":"02PaintEstimator"),
-    "03":"03TextMsgAbbreviation"),
-    "04":"04TextMsgDecoder"),
-    "05":"05TextMsgExpander"),
-    "06":"06DrawRightTriangle"),
-    "07":"07DrawHalfArrow"),
-    "08":"08PeopleWeights"),
-    "09":"09PlayerRoster"),
-    "10":"10CoinFlipper"),
-    "11":"11ReverseMessage"),
-    "12":"12DiceStats"),
-    "13":"13TextAnalyzer"),
-    "14":"14AuthoringAssistant"),
-    "15":"15ShoppingCartPrinter"),
-    "16":"16ShoppingCartManager"),
-    "17":"17BinaryConverter"),
-    "18":"18ParseStrings"),
-    "19":"19DataVisualizer"),
-    "20":"20CaesarCipher"),
-    "21":"21Yahtzee")}
+    folders = {"1":"test1",
+    "00":"00HelloWorld",
+    "01":"01BasicInput",
+    "02":"02PaintEstimator",
+    "03":"03TextMsgAbbreviation",
+    "04":"04TextMsgDecoder",
+    "05":"05TextMsgExpander",
+    "06":"06DrawRightTriangle",
+    "07":"07DrawHalfArrow",
+    "08":"08PeopleWeights",
+    "09":"09PlayerRoster",
+    "10":"10CoinFlipper",
+    "11":"11ReverseMessage",
+    "12":"12DiceStats",
+    "13":"13TextAnalyzer",
+    "14":"14AuthoringAssistant",
+    "15":"15ShoppingCartPrinter",
+    "16":"16ShoppingCartManager",
+    "17":"17BinaryConverter",
+    "18":"18ParseStrings",
+    "19":"19DataVisualizer",
+    "20":"20CaesarCipher",
+    "21":"21Yahtzee"}
     due_dates = {'1':datetime.datetime.today(),
+    '00':datetime.datetime.today(),
     '01':datetime.datetime.today(),
     '02':datetime.datetime.today(),
     '03':datetime.datetime.today(),
@@ -141,7 +142,9 @@ def main():
         #format = time,first,last,git,weber
         raw = csv.reader(f,delimiter=',',quotechar='"')
         for row in raw:
-            students.append(Student(f"{row[3]}, {row[2]}",row[3]))
+            if row[1] == "What is your First Name?":
+                continue#skip the first row/header
+            students.append(Student(f"{row[2]}, {row[1]}",row[3]))
     data['students'] = students
     #save all the things
     data.close()

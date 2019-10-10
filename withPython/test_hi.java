@@ -19,7 +19,7 @@ public class test_hi {
     //test 1
     total++;
     student.main(args);
-    String correct = "hi\n";
+    String correct = "hi\r\n";
     String result = getOutput().substring(0,correct.length());
     if (result.equals(correct)){
       score++;

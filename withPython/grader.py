@@ -1,4 +1,4 @@
-import os, shutil, importlib.util, csv, subprocess, datetime, shelve
+import os, shutil, importlib.util, csv, subprocess, datetime, shelve, glob
 import SystemCommands as sc
 from data_maker import Assignment,Student
 from data_maker import main as setup
@@ -26,18 +26,17 @@ def gather(a):
         shutil.rmtree('testing')
     except:
         pass#old testing folder already removed
+    finally:
+        os.mkdir("testing")
     data = shelve.open('grading_data')
     students = data['students']
-    os.mkdir("testing")
-    PIPE = subprocess.PIPE
     for s in students:
-        shutil.copyfile(os.path.join(root,s.github,a.folder,a.file), os.path.join(root,'testing',s.github+'_'+a.file))
+        os.mkdir("testing\\"+s.github)
+        shutil.copyfile(os.path.join(root,s.github,a.folder,a.file), os.path.join(root,'testing',s.github,a.file))
+        shutil.copyfile(os.path.join(root,a.test),os.path.join(root,'testing',s.github,a.test))
         os.chdir(s.github)
-        p = subprocess.Popen(["git","log","-1","--format=%ci"],stdout=PIPE, stderr=PIPE)
-        out = p.communicate()[0].decode()
+        s.submit = format_date(sc.git_log())
         os.chdir(root)
-        time = format_date(out)
-        s.submit = time
     data['students']=students
     data.close()
 
@@ -61,25 +60,18 @@ def grade(a):
     with open('report.csv','w',newline='') as f:
         w = csv.writer(f,delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
         w.writerow(['Student Name','assignment name','points earned','is late?'])
-    test_name = "test_"+a.file
-    spec = importlib.util.spec_from_file_location(test_name,os.path.join(root,test_name))
-    tests = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(tests)
-    files = [f.name for f in os.scandir() if f.is_file()]
-    files.remove('report.csv')
-    for i in files:
-        try:
-            print(f"Grading: {i}")
-            out = tests.tests(i)
-        except:
-            #python error running tests - probably because they didn't merge
-            points = 0#so they failed
-        else:
-            points = string_to_math(out)
-        #seperate github username from 'github_file.py'
-        name = name = i[:-(1+len(a.file))]
+    folders = [f.name for f in os.scandir() if f.is_dir()]
+    for f in folders:
+        print(f"Grading {f}")
+        os.chdir(f)
+        if sc.compile_java(a.test):
+            score = sc.run_java(a.test[:-5])
+            points = string_to_math(score)
+        else:#didn't compile - auto fail
+            points = 0
+        os.chdir("..")
         for student in s:
-            if student.github == name:
+            if student.github == f:
                 student.set_grade(a, points)
     f = open('report.csv','a',newline='')
     w = csv.writer(f,delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -93,6 +85,7 @@ def grade(a):
     shutil.rmtree('testing')
 
 def string_to_math(thing):
+    thing = thing[:-2]#rm /r/n
     if len(thing)%3==0:
         #single digit values
         total = int(thing[-1])
