@@ -1,5 +1,5 @@
 import os, shutil, importlib.util, csv, subprocess, datetime, shelve
-import SystemCommands
+import SystemCommands as sc
 from data_maker import Assignment,Student
 from data_maker import main as setup
 
@@ -33,7 +33,7 @@ def gather(a):
     for s in students:
         shutil.copyfile(os.path.join(root,s.github,a.folder,a.file), os.path.join(root,'testing',s.github+'_'+a.file))
         os.chdir(s.github)
-        p = subprocess.Popen(["git","log","-1","--format=%ci"],stdout=PIPE)
+        p = subprocess.Popen(["git","log","-1","--format=%ci"],stdout=PIPE, stderr=PIPE)
         out = p.communicate()[0].decode()
         os.chdir(root)
         time = format_date(out)
