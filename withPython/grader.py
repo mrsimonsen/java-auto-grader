@@ -1,4 +1,5 @@
 import os, shutil, importlib.util, csv, subprocess, datetime, shelve
+import SystemCommands
 from data_maker import Assignment,Student
 from data_maker import main as setup
 
@@ -108,12 +109,11 @@ def string_to_math(thing):
 
 def main():
     assign_obj = intro()
-    print("gathering files, please wait")
+    print("--Gathering Files--")
     gather(assign_obj)
-    print('files gatherd, moving to grading')
+    print('--Starting Grading--')
     grade(assign_obj)
-    print("Testing complete")
-    #input("Press enter to exit...")
+    print("--Testing Complete--")
 
 if __name__ == '__main__':
     main()
