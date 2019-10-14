@@ -32,7 +32,8 @@ def gather(a):
     students = data['students']
     for s in students:
         os.mkdir("testing\\"+s.github)
-        shutil.copyfile(os.path.join(root,s.github,a.folder,a.file), os.path.join(root,'testing',s.github,a.file))
+        for i in a.file:
+            shutil.copyfile(os.path.join(root,s.github,a.folder,i), os.path.join(root,'testing',s.github,i))
         shutil.copyfile(os.path.join(root,a.test),os.path.join(root,'testing',s.github,a.test))
         os.chdir(s.github)
         s.submit = format_date(sc.git_log())
