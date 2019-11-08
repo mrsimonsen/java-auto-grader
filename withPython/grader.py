@@ -32,6 +32,8 @@ def gather(a):
     students = data['students']
     for s in students:
         os.mkdir("testing\\"+s.github)
+        if(a.folder == "20CaesarCipher"):
+            shutil.copyfile(os.path.join(root,"test.txt"),os.path.join(root,'testing',s.github,'test.txt'))
         for i in a.file:
             shutil.copyfile(os.path.join(root,s.github,a.folder,i), os.path.join(root,'testing',s.github,i))
         shutil.copyfile(os.path.join(root,a.test),os.path.join(root,'testing',s.github,a.test))
