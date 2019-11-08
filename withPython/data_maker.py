@@ -138,7 +138,7 @@ def main():
     #student details
     names = {}
     students = []
-    with open('1400 usernames - Form Responses 1.csv','r',newline='') as f:
+    with open('usernames - Form Responses 1.csv','r',newline='') as f:
         #format = time,first,last,git,weber
         raw = csv.reader(f,delimiter=',',quotechar='"')
         for row in raw:
