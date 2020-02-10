@@ -71,6 +71,7 @@ def grade(a):
             score = sc.run_java(a.test[:-5])
             points = string_to_math(score)
         else:#didn't compile - auto fail
+            print("didn't compile")
             points = 0
         os.chdir("..")
         for student in s:
@@ -89,19 +90,22 @@ def grade(a):
     shutil.rmtree('testing')
 
 def string_to_math(thing):
-    thing = thing[:-2]#rm /r/n
-    if len(thing)%3==0:
-        #single digit values
-        total = int(thing[-1])
-        score = int(thing[0])
-    if len(thing)%5==0:
-        #double digit values
-        total = int(thing[-2:])
-        score = int(thing[:2])
-    if len(thing)%2==0:
-        #single digit score with 2 digit total
-        total = int(thing[-2:])
-        score = int(thing[0])
+    if "/" in thing:
+        thing = thing[:-2]#rm /r/n
+        if len(thing)%3==0:
+            #single digit values
+            total = int(thing[-1])
+            score = int(thing[0])
+        elif len(thing)%5==0:
+            #double digit values
+            total = int(thing[-2:])
+            score = int(thing[:2])
+        elif len(thing)%2==0:
+            #single digit score with 2 digit total
+            total = int(thing[-2:])
+            score = int(thing[0])
+    else:
+        return 0
     return round(score/total * 10,2)
 
 def main():
